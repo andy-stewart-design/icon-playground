@@ -1,0 +1,7 @@
+canvas {
+  background: #efefef;
+
+  &:focus-visible {
+    outline-color: #d9d9d9;
+  }
+}
