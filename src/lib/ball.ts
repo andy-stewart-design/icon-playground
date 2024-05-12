@@ -10,19 +10,11 @@ export default class Ball {
   friction: number;
   controls: boolean;
 
-  moving = {
-    up: false,
-    down: false,
-    left: false,
-    right: false,
-  };
-  acceleration = new Vector(0, 0);
-
   constructor({
     position = new Vector(0, 0),
     radius = 50,
     color = "red",
-    friction = 0.03,
+    friction = 0.05,
     controls = true,
   }) {
     this.position = position;
@@ -54,12 +46,17 @@ export default class Ball {
   }
 
   drawVectors() {
-    this.vel.draw(this.position.x, this.position.y, "blue", this.radius / 2);
-    this.acc.draw(this.position.x, this.position.y, "green", this.radius * 3);
+    this.vel
+      .normalize()
+      .multiply(this.radius * 2)
+      .draw(this.position.x, this.position.y, "blue");
+    this.acc
+      .normalize()
+      .multiply(this.radius)
+      .draw(this.position.x, this.position.y, "green");
   }
 
-  move() {
-    this.acc = this.acceleration;
+  update() {
     this.vel = this.vel.add(this.acc).multiply(1 - this.friction);
     this.position = this.position.add(this.vel);
   }
@@ -67,25 +64,22 @@ export default class Ball {
   handleMove() {
     const events: Array<keyof WindowEventMap> = ["keydown", "keyup"];
     const magnitude = 0.4;
-    const direction = new Vector(0, 0);
+    const nextDirection = new Vector(0, 0);
 
     events.forEach((event) => {
       canvas.el.addEventListener(event, (e) => {
         if (isKeyboardEvent(e) && isArrowKey(e.key)) {
-          if (e.key === "ArrowUp") this.moving.up = e.type === "keydown";
-          if (e.key === "ArrowDown") this.moving.down = event === "keydown";
-          if (e.key === "ArrowLeft") this.moving.left = event === "keydown";
-          if (e.key === "ArrowRight") this.moving.right = event === "keydown";
+          if (e.key === "ArrowUp") {
+            nextDirection.y = e.type === "keydown" ? 1 : 0;
+          } else if (e.key === "ArrowDown") {
+            nextDirection.y = e.type === "keydown" ? -1 : 0;
+          } else if (e.key === "ArrowRight") {
+            nextDirection.x = e.type === "keydown" ? 1 : 0;
+          } else if (e.key === "ArrowLeft") {
+            nextDirection.x = e.type === "keydown" ? -1 : 0;
+          }
 
-          if (e.type === "keydown") {
-            if (this.moving.up) direction.y = 1;
-            if (this.moving.down) direction.y = -1;
-            if (this.moving.right) direction.x = 1;
-            if (this.moving.left) direction.x = -1;
-          } else direction.x = direction.y = 0;
-
-          this.acceleration = direction.unit().multiply(magnitude);
-          console.log(e.type, this.acceleration);
+          this.acc = nextDirection.multiply(magnitude);
         }
       });
     });
@@ -93,7 +87,8 @@ export default class Ball {
 }
 
 function isArrowKey(key: string) {
-  return ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(key);
+  const keys = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
+  return keys.includes(key);
 }
 
 const isKeyboardEvent = (event: Event): event is KeyboardEvent => {

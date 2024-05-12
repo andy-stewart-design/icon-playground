@@ -35,9 +35,9 @@ function init() {
 
   function draw() {
     canvas.clear();
-    ball.move();
+    ball.update();
     ball.draw();
-    ball2.move();
+    ball2.update();
     ball2.draw();
     requestAnimationFrame(draw);
   }

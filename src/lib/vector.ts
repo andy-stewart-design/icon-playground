@@ -29,7 +29,7 @@ export default class Vector {
     return new Vector(this.x / scalar, this.y / scalar);
   }
 
-  unit() {
+  normalize() {
     if (this.magnitude() === 0) return new Vector(0, 0);
     else return this.divide(this.magnitude());
   }
