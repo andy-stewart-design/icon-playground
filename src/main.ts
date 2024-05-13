@@ -25,20 +25,44 @@ init();
 // Functions
 
 function init() {
+  const balls: Array<Ball> = [];
   const ball = new Ball({
     position: new Vector(canvas.center.x, canvas.center.y),
   });
+  balls.push(ball);
   const ball2 = new Ball({
     position: new Vector(100, 100),
     controls: false,
   });
+  balls.push(ball2);
 
   function draw() {
     canvas.clear();
-    ball.update();
-    ball.draw();
-    ball2.update();
-    ball2.draw();
+
+    balls.forEach((ball) => {
+      ball.update();
+      ball.draw();
+
+      balls.forEach((otherBall) => {
+        if (ball === otherBall) return;
+        const isOverlapping = ball.isOverlapping(otherBall);
+        if (isOverlapping) {
+          ball.separateFrom(otherBall);
+        }
+      });
+    });
+
+    // ball.update();
+    // ball.draw();
+
+    // ball2.update();
+    // ball2.draw();
+
+    // const isOverlapping = ball.isOverlapping(ball2);
+    // if (isOverlapping) {
+    //   ball.separateFrom(ball2);
+    // }
+
     requestAnimationFrame(draw);
   }
 

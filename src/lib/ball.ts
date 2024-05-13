@@ -42,7 +42,7 @@ export default class Ball {
     canvas.ctx.stroke();
     canvas.ctx.closePath();
 
-    if (this.controls) this.drawVectors();
+    this.drawVectors();
   }
 
   drawVectors() {
@@ -83,6 +83,23 @@ export default class Ball {
         }
       });
     });
+  }
+
+  isOverlapping(other: Ball) {
+    const distanceBetweenCenterPoints = this.position
+      .subtract(other.position)
+      .magnitude();
+    const comibinedRadii = this.radius + other.radius;
+    return comibinedRadii >= distanceBetweenCenterPoints;
+  }
+
+  separateFrom(other: Ball) {
+    const distanceBetweenCenterPoints = this.position.subtract(other.position);
+    const comibinedRadii = this.radius + other.radius;
+    const overlap = comibinedRadii - distanceBetweenCenterPoints.magnitude();
+    const direction = distanceBetweenCenterPoints.normalize().multiply(overlap);
+
+    this.position = this.position.add(direction.divide(2));
   }
 }
 
