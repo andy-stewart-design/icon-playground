@@ -2,7 +2,8 @@ import canvas from "./lib/canvas";
 import Vector from "./lib/vector";
 // import { Circle } from "./lib/circle";
 import "./style.css";
-import Ball from "./lib/ball";
+// import Ball from "./lib/ball";
+import Icon from "./lib/icon";
 
 // const { canvas, ctx } = setup();
 // canvas.el.addEventListener("keydown", handleKeydown);
@@ -25,32 +26,42 @@ init();
 // Functions
 
 function init() {
-  const balls: Array<Ball> = [];
-  const ball = new Ball({
-    position: new Vector(canvas.center.x, canvas.center.y),
+  const icon = new Icon({
+    pos: new Vector(canvas.width / 2, 100),
+    rad: 20,
   });
-  balls.push(ball);
-  const ball2 = new Ball({
-    position: new Vector(100, 100),
-    controls: false,
-  });
-  balls.push(ball2);
+  // const balls: Array<Ball> = [];
+  // const ball = new Ball({
+  //   position: new Vector(canvas.center.x, canvas.center.y),
+  // });
+  // balls.push(ball);
+  // const ball2 = new Ball({
+  //   position: new Vector(100, 100),
+  //   controls: false,
+  // });
+  // balls.push(ball2);
 
   function draw() {
     canvas.clear();
 
-    balls.forEach((ball) => {
-      ball.update();
-      ball.draw();
+    icon.applyForce(new Vector(0, 0.1));
+    icon.applyForce(new Vector(-0.05, 0));
+    icon.update();
+    icon.edges();
+    icon.show();
 
-      balls.forEach((otherBall) => {
-        if (ball === otherBall) return;
-        const isOverlapping = ball.isOverlapping(otherBall);
-        if (isOverlapping) {
-          ball.separateFrom(otherBall);
-        }
-      });
-    });
+    // balls.forEach((ball) => {
+    //   balls.forEach((otherBall) => {
+    //     if (ball === otherBall) return;
+    //     // const isOverlapping = ball.isOverlapping(otherBall);
+    //     // if (isOverlapping) {
+    //     ball.reboundFrom(otherBall);
+    //     // }
+    //   });
+
+    //   ball.update();
+    //   ball.draw();
+    // });
 
     // ball.update();
     // ball.draw();

@@ -9,29 +9,38 @@ export default class Vector {
     this.y = y;
   }
 
-  magnitude() {
+  get magnitude() {
     return Math.sqrt(this.x ** 2 + this.y ** 2);
   }
 
   add(vector: Vector) {
-    return new Vector(this.x + vector.x, this.y + vector.y);
+    this.x = this.x + vector.x;
+    this.y = this.y + vector.y;
   }
 
   subtract(vector: Vector) {
-    return new Vector(this.x - vector.x, this.y - vector.y);
+    this.x = this.x - vector.x;
+    this.y = this.y - vector.y;
   }
 
   multiply(scalar: number) {
-    return new Vector(this.x * scalar, this.y * scalar);
+    this.x = this.x * scalar;
+    this.y = this.y * scalar;
   }
 
   divide(scalar: number) {
-    return new Vector(this.x / scalar, this.y / scalar);
+    this.x = this.x / scalar;
+    this.y = this.y / scalar;
+  }
+
+  set(x: number, y: number) {
+    this.x = x;
+    this.y = y;
   }
 
   normalize() {
-    if (this.magnitude() === 0) return new Vector(0, 0);
-    else return this.divide(this.magnitude());
+    if (this.magnitude !== 0) return;
+    this.divide(this.magnitude);
   }
 
   normal() {

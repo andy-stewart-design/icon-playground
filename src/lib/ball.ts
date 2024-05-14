@@ -26,7 +26,13 @@ export default class Ball {
     this.friction = friction;
     this.controls = controls;
 
-    if (this.controls) this.handleMove();
+    if (this.controls) this.addEventListeners();
+  }
+
+  update() {
+    this.vel = this.vel.add(this.acc).multiply(1 - this.friction);
+    this.position = this.position.add(this.vel);
+    this.acc.multiply(0);
   }
 
   draw() {
@@ -56,12 +62,7 @@ export default class Ball {
       .draw(this.position.x, this.position.y, "green");
   }
 
-  update() {
-    this.vel = this.vel.add(this.acc).multiply(1 - this.friction);
-    this.position = this.position.add(this.vel);
-  }
-
-  handleMove() {
+  addEventListeners() {
     const events: Array<keyof WindowEventMap> = ["keydown", "keyup"];
     const magnitude = 0.4;
     const nextDirection = new Vector(0, 0);
@@ -80,6 +81,7 @@ export default class Ball {
           }
 
           this.acc = nextDirection.multiply(magnitude);
+          console.log(this.acc);
         }
       });
     });
@@ -100,6 +102,14 @@ export default class Ball {
     const direction = distanceBetweenCenterPoints.normalize().multiply(overlap);
 
     this.position = this.position.add(direction.divide(2));
+  }
+
+  reboundFrom(other: Ball) {
+    const normal = this.position.subtract(other.position).normalize();
+
+    if (this.isOverlapping(other)) {
+      this.vel = this.vel.add(normal);
+    }
   }
 }
 
