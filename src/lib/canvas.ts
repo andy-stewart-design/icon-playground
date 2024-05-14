@@ -60,6 +60,14 @@ class Canvas {
   get height() {
     return this.el.clientHeight;
   }
+
+  get posX() {
+    return this.el.getBoundingClientRect().left;
+  }
+
+  get posY() {
+    return this.el.getBoundingClientRect().top;
+  }
 }
 
 const canvas = new Canvas();

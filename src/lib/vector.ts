@@ -38,6 +38,10 @@ export default class Vector {
     this.y = y;
   }
 
+  copy() {
+    return new Vector(this.x, this.y);
+  }
+
   normalize() {
     if (this.magnitude !== 0) return;
     this.divide(this.magnitude);
