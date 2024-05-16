@@ -25,8 +25,6 @@ init();
 
 // Functions
 
-let count = 0;
-
 function init() {
   const icons: Array<Icon> = [];
 
@@ -35,7 +33,9 @@ function init() {
     const mouseY = e.clientY - canvas.posY;
     const mouse = new Vector(mouseX, mouseY);
     const mass = Math.random() * 2 + 0.5;
-    icons.push(new Icon({ pos: mouse, mass }));
+    const accX = Math.random() * 8 - 4;
+    // const accX = 0;
+    icons.push(new Icon({ pos: mouse, acc: new Vector(accX, 0), mass }));
   });
   // const balls: Array<Ball> = [];
   // const ball = new Ball({
@@ -53,20 +53,16 @@ function init() {
 
     icons.forEach((icon) => {
       icons.forEach((otherIcon) => {
-        if (icon === otherIcon) return;
-        const isOverlapping = icon.isOverlapping(otherIcon);
-        console.log(isOverlapping);
+        icon.isOverlapping(otherIcon);
       });
 
-      icon.applyForce(new Vector(0, 0.1 * icon.mass));
+      icon.applyForce(new Vector(0, 0.3 * icon.mass));
       // icon.applyForce(new Vector(Math.max(5 - count, 0), 0));
       icon.friction();
       icon.update();
       icon.edges();
       icon.show();
     });
-
-    count += 1;
 
     // balls.forEach((ball) => {
     //   balls.forEach((otherBall) => {

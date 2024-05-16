@@ -10,7 +10,11 @@ export default class Vector {
   }
 
   get magnitude() {
-    return Math.sqrt(this.x ** 2 + this.y ** 2);
+    return Math.sqrt(this.magSq);
+  }
+
+  get magSq() {
+    return this.x ** 2 + this.y ** 2;
   }
 
   add(vector: Vector) {
@@ -33,6 +37,14 @@ export default class Vector {
     this.y = this.y / scalar;
   }
 
+  limit(max: number) {
+    const mSq = this.magSq;
+    if (mSq > max * max) {
+      this.divide(Math.sqrt(mSq));
+    }
+    return this;
+  }
+
   set(x: number, y: number) {
     this.x = x;
     this.y = y;
@@ -43,7 +55,7 @@ export default class Vector {
   }
 
   normalize() {
-    if (this.magnitude !== 0) return;
+    if (this.magnitude === 0) return;
     this.divide(this.magnitude);
   }
 
@@ -57,11 +69,8 @@ export default class Vector {
 
   draw(x: number, y: number, color = "black", factor = 1) {
     canvas.ctx.beginPath();
-    canvas.ctx.moveTo(x, canvas.toCanvasY(y));
-    canvas.ctx.lineTo(
-      x + this.x * factor,
-      canvas.toCanvasY(y + this.y * factor)
-    );
+    canvas.ctx.moveTo(x, y);
+    canvas.ctx.lineTo(x + this.x * factor, y + this.y * factor);
     canvas.ctx.strokeStyle = color;
     canvas.ctx.stroke();
     canvas.ctx.closePath();

@@ -33,8 +33,8 @@ export default class Icon {
   show() {
     canvas.ctx.beginPath();
     canvas.ctx.arc(this.pos.x, this.pos.y, this.rad, 0, 2 * Math.PI);
-    canvas.ctx.fillStyle = this.col;
-    canvas.ctx.fill();
+    canvas.ctx.strokeStyle = this.col;
+    canvas.ctx.stroke();
     canvas.ctx.closePath();
   }
 
@@ -48,7 +48,7 @@ export default class Icon {
     if (canvas.height - (this.pos.y + this.rad) < 1) {
       const friction = this.vel.copy();
       const mu = 0.1;
-      const normal = this.mass / 5;
+      const normal = this.mass;
       friction.normalize();
       friction.multiply(mu * normal * -1);
       this.applyForce(friction);
@@ -75,10 +75,18 @@ export default class Icon {
   }
 
   isOverlapping(other: Icon) {
+    if (this === other) return false;
+
     const currentPos = this.pos.copy();
     currentPos.subtract(other.pos);
     const distanceBetweenCenterPoints = currentPos.magnitude;
     const comibinedRadii = this.rad + other.rad;
+    if (comibinedRadii >= distanceBetweenCenterPoints) {
+      currentPos.normalize();
+      this.vel.set(currentPos.x, currentPos.y);
+      //   currentPos.multiply(2);
+      //   this.applyForce(currentPos);
+    }
     return comibinedRadii >= distanceBetweenCenterPoints;
   }
 }
