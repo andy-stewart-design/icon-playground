@@ -4,13 +4,12 @@
 // https://www.mathsisfun.com/algebra/vectors-dot-product.html
 
 import Canvas from "./canvas";
+import Vector from "./vector";
 
 class Agent {
   ctx: CanvasRenderingContext2D;
-  x: number;
-  y: number;
-  vx: number;
-  vy: number;
+  position: Vector;
+  velocity: Vector;
   mass: number;
   restitution: number;
   isColliding: boolean;
@@ -20,17 +19,13 @@ class Agent {
 
   constructor(
     ctx: CanvasRenderingContext2D,
-    x: number,
-    y: number,
-    vx: number,
-    vy: number,
+    position: Vector,
+    velocity: Vector,
     mass: number
   ) {
     this.ctx = ctx;
-    this.x = x;
-    this.y = y;
-    this.vx = vx;
-    this.vy = vy;
+    this.position = position;
+    this.velocity = velocity;
     this.mass = mass;
     this.restitution = 0.9;
     this.isColliding = false;
@@ -42,13 +37,16 @@ class Agent {
     this.ctx.fillStyle =
       this.isColliding && this.devMode ? "#ff8080" : "#0099b0";
     this.ctx.beginPath();
-    this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+    this.ctx.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
     this.ctx.fill();
 
     if (this.devMode) {
       this.ctx.beginPath();
-      this.ctx.moveTo(this.x, this.y);
-      this.ctx.lineTo(this.x + this.vx, this.y + this.vy);
+      this.ctx.moveTo(this.position.x, this.position.y);
+      this.ctx.lineTo(
+        this.position.x + this.velocity.x,
+        this.position.y + this.velocity.y
+      );
       this.ctx.stroke();
     }
   }
@@ -56,12 +54,12 @@ class Agent {
   update(secondsPassed: number) {
     const gravity = 9.81 * 20;
 
-    this.vy += gravity * secondsPassed;
-    this.x += this.vx * secondsPassed;
-    this.y += this.vy * secondsPassed;
+    this.velocity.y += gravity * secondsPassed;
+    this.position.x += this.velocity.x * secondsPassed;
+    this.position.y += this.velocity.y * secondsPassed;
 
     if (this.devMode) {
-      const angleRadians = Math.atan2(this.vy, this.vx);
+      const angleRadians = Math.atan2(this.velocity.y, this.velocity.x);
       const degrees = (180 * angleRadians) / Math.PI;
       this.angle = degrees;
     }
@@ -90,12 +88,16 @@ export class Scene {
   createWorld() {
     this.agents = [];
     for (let i = 0; i < 15; i++) {
-      const x = 50 + Math.random() * 300;
-      const y = 0 + Math.random() * 200;
-      const vx = 0 + Math.random() * 50;
-      const vy = 0 + Math.random() * 50;
+      const position = new Vector(
+        50 + Math.random() * 300,
+        0 + Math.random() * 200
+      );
+      const velocity = new Vector(
+        0 + Math.random() * 50,
+        0 + Math.random() * 50
+      );
       const mass = 0.75;
-      this.agents.push(new Agent(this.canvas.ctx, x, y, vx, vy, mass));
+      this.agents.push(new Agent(this.canvas.ctx, position, velocity, mass));
     }
   }
 
@@ -122,23 +124,23 @@ export class Scene {
       thisAgent = this.agents[i];
       thisAgent.isColliding = false;
 
-      if (thisAgent.x < thisAgent.radius) {
-        thisAgent.vx = thisAgent.vx * 0.9 * -1;
-        thisAgent.x = thisAgent.radius;
+      if (thisAgent.position.x < thisAgent.radius) {
+        thisAgent.velocity.x = thisAgent.velocity.x * 0.9 * -1;
+        thisAgent.position.x = thisAgent.radius;
         thisAgent.isColliding = true;
-      } else if (thisAgent.x > this.canvas.width - thisAgent.radius) {
-        thisAgent.vx = thisAgent.vx * 0.9 * -1;
-        thisAgent.x = this.canvas.width - thisAgent.radius;
+      } else if (thisAgent.position.x > this.canvas.width - thisAgent.radius) {
+        thisAgent.velocity.x = thisAgent.velocity.x * 0.9 * -1;
+        thisAgent.position.x = this.canvas.width - thisAgent.radius;
         thisAgent.isColliding = true;
       }
 
-      if (thisAgent.y < thisAgent.radius) {
-        thisAgent.vy = thisAgent.vy * 0.9 * -1;
-        thisAgent.y = thisAgent.radius;
+      if (thisAgent.position.y < thisAgent.radius) {
+        thisAgent.velocity.y = thisAgent.velocity.y * 0.9 * -1;
+        thisAgent.position.y = thisAgent.radius;
         thisAgent.isColliding = true;
-      } else if (thisAgent.y > this.canvas.height - thisAgent.radius) {
-        thisAgent.vy = thisAgent.vy * 0.9 * -1;
-        thisAgent.y = this.canvas.height - thisAgent.radius;
+      } else if (thisAgent.position.y > this.canvas.height - thisAgent.radius) {
+        thisAgent.velocity.y = thisAgent.velocity.y * 0.9 * -1;
+        thisAgent.position.y = this.canvas.height - thisAgent.radius;
         thisAgent.isColliding = true;
       }
 
@@ -150,11 +152,14 @@ export class Scene {
           otherAgent.isColliding = true;
 
           const vecCollision = {
-            x: otherAgent.x - thisAgent.x,
-            y: otherAgent.y - thisAgent.y,
+            x: otherAgent.position.x - thisAgent.position.x,
+            y: otherAgent.position.y - thisAgent.position.y,
           };
 
-          const distance = this.getDistance(thisAgent, otherAgent);
+          const distance = this.getDistance(
+            thisAgent.position,
+            otherAgent.position
+          );
 
           const vecCollisionNorm = {
             x: vecCollision.x / distance,
@@ -162,8 +167,8 @@ export class Scene {
           };
 
           const vRelativeVelocity = {
-            x: thisAgent.vx - otherAgent.vx,
-            y: thisAgent.vy - otherAgent.vy,
+            x: thisAgent.velocity.x - otherAgent.velocity.x,
+            y: thisAgent.velocity.y - otherAgent.velocity.y,
           };
 
           let speed =
@@ -175,27 +180,27 @@ export class Scene {
           speed *= Math.min(thisAgent.restitution, otherAgent.restitution);
           const impulse = (2 * speed) / (thisAgent.mass + otherAgent.mass);
 
-          thisAgent.vx -= impulse * otherAgent.mass * vecCollisionNorm.x;
-          thisAgent.vy -= impulse * otherAgent.mass * vecCollisionNorm.y;
-          otherAgent.vx += impulse * thisAgent.mass * vecCollisionNorm.x;
-          otherAgent.vy += impulse * thisAgent.mass * vecCollisionNorm.y;
+          thisAgent.velocity.x -=
+            impulse * otherAgent.mass * vecCollisionNorm.x;
+          thisAgent.velocity.y -=
+            impulse * otherAgent.mass * vecCollisionNorm.y;
+          otherAgent.velocity.x +=
+            impulse * thisAgent.mass * vecCollisionNorm.x;
+          otherAgent.velocity.y +=
+            impulse * thisAgent.mass * vecCollisionNorm.y;
         }
       }
     }
   }
 
-  getAngle(agent: Agent, other: Agent) {
-    const angleRadians = Math.atan2(other.y - agent.y, other.x - agent.x);
-    const angleDeg = (angleRadians * 180) / Math.PI;
-    return angleDeg;
-  }
-
-  getDistance(agent: Agent, other: Agent) {
-    return Math.sqrt((other.x - agent.x) ** 2 + (other.y - agent.y) ** 2);
+  getDistance(vec1: Vector, vec2: Vector) {
+    return Math.sqrt((vec2.x - vec1.x) ** 2 + (vec2.y - vec1.y) ** 2);
   }
 
   checkIntersection(agent: Agent, other: Agent) {
-    const distance = (other.x - agent.x) ** 2 + (other.y - agent.y) ** 2;
+    const distance =
+      (other.position.x - agent.position.x) ** 2 +
+      (other.position.y - agent.position.y) ** 2;
     return distance <= (agent.radius + agent.radius) ** 2;
   }
 
