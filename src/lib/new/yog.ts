@@ -52,7 +52,7 @@ class Agent {
   }
 
   update(secondsPassed: number) {
-    const gravity = 9.81 * 20;
+    const gravity = 9.81 * 40;
 
     this.velocity.y += gravity * secondsPassed;
     this.position.x += this.velocity.x * secondsPassed;
@@ -81,7 +81,9 @@ export class Scene {
 
   init() {
     this.createWorld();
-    this.canvas.el.addEventListener("click", this.handleInteractionStart);
+    this.canvas.el.addEventListener("click", (e) =>
+      this.handleInteractionStart(e)
+    );
     window.requestAnimationFrame((timeStamp) => this.animate(timeStamp));
   }
 
@@ -108,6 +110,7 @@ export class Scene {
 
     this.canvas.clear();
     this.detectCollisions();
+
     this.agents.forEach((agent) => {
       agent.update(secondsPassed);
       agent.draw();
@@ -151,43 +154,37 @@ export class Scene {
           thisAgent.isColliding = true;
           otherAgent.isColliding = true;
 
-          const vecCollision = {
-            x: otherAgent.position.x - thisAgent.position.x,
-            y: otherAgent.position.y - thisAgent.position.y,
-          };
+          const collision = new Vector(
+            otherAgent.position.x - thisAgent.position.x,
+            otherAgent.position.y - thisAgent.position.y
+          );
 
           const distance = this.getDistance(
             thisAgent.position,
             otherAgent.position
           );
 
-          const vecCollisionNorm = {
-            x: vecCollision.x / distance,
-            y: vecCollision.y / distance,
-          };
+          const collisionNorm = new Vector(
+            collision.x / distance,
+            collision.y / distance
+          );
 
-          const vRelativeVelocity = {
-            x: thisAgent.velocity.x - otherAgent.velocity.x,
-            y: thisAgent.velocity.y - otherAgent.velocity.y,
-          };
+          const relativeVelocity = new Vector(
+            thisAgent.velocity.x - otherAgent.velocity.x,
+            thisAgent.velocity.y - otherAgent.velocity.y
+          );
 
-          let speed =
-            vRelativeVelocity.x * vecCollisionNorm.x +
-            vRelativeVelocity.y * vecCollisionNorm.y;
+          let speed = Vector.dot(relativeVelocity, collisionNorm);
 
           if (speed < 0) break;
 
           speed *= Math.min(thisAgent.restitution, otherAgent.restitution);
           const impulse = (2 * speed) / (thisAgent.mass + otherAgent.mass);
 
-          thisAgent.velocity.x -=
-            impulse * otherAgent.mass * vecCollisionNorm.x;
-          thisAgent.velocity.y -=
-            impulse * otherAgent.mass * vecCollisionNorm.y;
-          otherAgent.velocity.x +=
-            impulse * thisAgent.mass * vecCollisionNorm.x;
-          otherAgent.velocity.y +=
-            impulse * thisAgent.mass * vecCollisionNorm.y;
+          thisAgent.velocity.x -= impulse * otherAgent.mass * collisionNorm.x;
+          thisAgent.velocity.y -= impulse * otherAgent.mass * collisionNorm.y;
+          otherAgent.velocity.x += impulse * thisAgent.mass * collisionNorm.x;
+          otherAgent.velocity.y += impulse * thisAgent.mass * collisionNorm.y;
         }
       }
     }
@@ -205,6 +202,12 @@ export class Scene {
   }
 
   handleInteractionStart(e: MouseEvent) {
-    console.log(e);
+    const mouse = new Vector(e.clientX, e.clientY);
+    this.agents.forEach((agent) => {
+      const distance = this.getDistance(agent.position, mouse);
+      if (distance < agent.radius) {
+        agent.velocity.y = agent.velocity.y + -500;
+      }
+    });
   }
 }
