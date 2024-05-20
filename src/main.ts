@@ -1,126 +1,72 @@
-import canvas from "./lib/canvas";
-import Vector from "./lib/vector";
-// import { Circle } from "./lib/circle";
-import "./style.css";
-// import Ball from "./lib/ball";
-import Icon from "./lib/icon";
+import { Scene } from "./lib/new/yog";
+import Canvas from "./lib/new/canvas";
 
-// const { canvas, ctx } = setup();
-// canvas.el.addEventListener("keydown", handleKeydown);
-// canvas.el.addEventListener("keyup", handleKeyUp);
+const canvas = new Canvas();
+const app = document.querySelector("#app");
+if (!app) throw new Error("App not found");
+app.appendChild(canvas.el);
 
-// const circles: Array<Circle> = [];
-// let LEFT = false;
-// let UP = false;
-// let RIGHT = false;
-// let DOWN = false;
+const scene = new Scene(canvas);
+scene.init();
 
-// for (let i = 0; i < 2; i++) {
-//   const pos = 100 + i * 100;
-//   const r = Math.random() * 20;
-//   circles.push(new Circle(canvas.ctx, pos, pos, r, Math.random() > 0.5));
+// import Mover from "./lib/new/mover";
+// import canvas from "./lib/canvas";
+
+// let gameObjects: Array<Mover> = [];
+// let secondsPassed = 0;
+// let oldTimeStamp = secondsPassed;
+
+// function createWorld() {
+//   gameObjects = [
+//     new Mover(canvas.ctx, 150, 0, 50, 50),
+//     // new Mover(canvas.ctx, 250, 50, 0, 50),
+//     // new Mover(canvas.ctx, 250, 150, 50, 50),
+//     new Mover(canvas.ctx, 250, 300, 0, -50),
+//     // new Mover(canvas.ctx, 350, 75, -50, 50),
+//     // new Mover(canvas.ctx, 300, 300, 50, -50),
+//   ];
 // }
 
-init();
+// function detectCollisions(mover: Mover) {
+//   for (const other of gameObjects) {
+//     if (mover === other) continue;
 
-// Functions
-
-function init() {
-  const icons: Array<Icon> = [];
-
-  window.addEventListener("click", (e) => {
-    const mouseX = e.clientX - canvas.posX;
-    const mouseY = e.clientY - canvas.posY;
-    const mouse = new Vector(mouseX, mouseY);
-    const mass = Math.random() * 2 + 0.5;
-    const accX = Math.random() * 8 - 4;
-    // const accX = 0;
-    icons.push(new Icon({ pos: mouse, acc: new Vector(accX, 0), mass }));
-  });
-  // const balls: Array<Ball> = [];
-  // const ball = new Ball({
-  //   position: new Vector(canvas.center.x, canvas.center.y),
-  // });
-  // balls.push(ball);
-  // const ball2 = new Ball({
-  //   position: new Vector(100, 100),
-  //   controls: false,
-  // });
-  // balls.push(ball2);
-
-  function draw() {
-    canvas.clear();
-
-    icons.forEach((icon) => {
-      icons.forEach((otherIcon) => {
-        icon.isOverlapping(otherIcon);
-      });
-
-      icon.applyForce(new Vector(0, 0.3 * icon.mass));
-      // icon.applyForce(new Vector(Math.max(5 - count, 0), 0));
-      icon.friction();
-      icon.update();
-      icon.edges();
-      icon.show();
-    });
-
-    // balls.forEach((ball) => {
-    //   balls.forEach((otherBall) => {
-    //     if (ball === otherBall) return;
-    //     // const isOverlapping = ball.isOverlapping(otherBall);
-    //     // if (isOverlapping) {
-    //     ball.reboundFrom(otherBall);
-    //     // }
-    //   });
-
-    //   ball.update();
-    //   ball.draw();
-    // });
-
-    // ball.update();
-    // ball.draw();
-
-    // ball2.update();
-    // ball2.draw();
-
-    // const isOverlapping = ball.isOverlapping(ball2);
-    // if (isOverlapping) {
-    //   ball.separateFrom(ball2);
-    // }
-
-    requestAnimationFrame(draw);
-  }
-
-  requestAnimationFrame(draw);
-  // canvas.ctx.clearRect(0, 0, 640, 480);
-  // circles.forEach((c) => {
-  //   if (c.isActive) move(c);
-  //   c.draw();
-  // });
-  // requestAnimationFrame(init);
-}
-
-// function handleKeydown(e: KeyboardEvent) {
-//   console.log(e);
-
-//   // if (e.key === "ArrowUp") UP = true;
-//   // if (e.key === "ArrowDown") DOWN = true;
-//   // if (e.key === "ArrowLeft") LEFT = true;
-//   // if (e.key === "ArrowRight") RIGHT = true;
+//     if (checkIntersection(mover, other)) {
+//       mover.isColliding = true;
+//       break;
+//     } else {
+//       mover.isColliding = false;
+//     }
+//   }
 // }
 
-// function handleKeyUp(e: KeyboardEvent) {
-//   console.log(e);
+// function checkIntersection(mover: Mover, other: Mover) {
+//   // Calculate the distance between the two circles
+//   let squareDistance =
+//     (mover.x - other.x) * (mover.x - other.x) +
+//     (mover.y - other.y) * (mover.y - other.y);
 
-//   // if (e.key === "ArrowUp") UP = false;
-//   // if (e.key === "ArrowDown") DOWN = false;
-//   // if (e.key === "ArrowLeft") LEFT = false;
-//   // if (e.key === "ArrowRight") RIGHT = false;
+//   // When the distance is smaller or equal to the sum
+//   // of the two radius, the circles touch or overlap
+//   return (
+//     squareDistance <= (mover.width + other.width) * (mover.width + other.width)
+//   );
 // }
 
-// function move(b: Circle) {
-//   if (UP) b.y -= 1;
-//   if (DOWN) b.y += 1;
-//   if (LEFT) b.x -= 1;
-//   if (RIGHT) b.x += 1;
+// function gameLoop(timeStamp: number) {
+//   secondsPassed = (timeStamp - oldTimeStamp) / 1000;
+//   oldTimeStamp = timeStamp;
+//   canvas.clear();
+
+//   gameObjects.forEach((mover) => {
+//     mover.update(secondsPassed);
+//     detectCollisions(mover);
+
+//     mover.draw();
+//   });
+
+//   window.requestAnimationFrame(gameLoop);
 // }
+
+// createWorld();
+// gameLoop(0);

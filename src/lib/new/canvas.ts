@@ -1,21 +1,3 @@
-export function setup() {
-  const canvas = document.querySelector("#canvas");
-  const isCanvas = canvas instanceof HTMLCanvasElement;
-  if (!canvas || !isCanvas) throw new Error("Canvas not found");
-
-  const ctx = canvas.getContext("2d")!;
-  const scale = window.devicePixelRatio;
-  const cX = canvas.width;
-  const cY = canvas.height;
-  canvas.style.width = cX + "px";
-  canvas.style.height = cY + "px";
-  canvas.width = cX * scale;
-  canvas.height = cY * scale;
-  ctx.scale(scale, scale);
-
-  return { canvas, ctx };
-}
-
 class Canvas {
   el: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
@@ -36,6 +18,10 @@ class Canvas {
     this.el.height = cH * scale;
     this.el.tabIndex = 0;
     this.ctx.scale(scale, scale);
+  }
+
+  toCanvasY(y: number) {
+    return this.height - y;
   }
 
   clear() {
@@ -65,9 +51,4 @@ class Canvas {
   }
 }
 
-const canvas = new Canvas();
-const app = document.querySelector("#app");
-if (!app) throw new Error("App not found");
-app.appendChild(canvas.el);
-
-export default canvas;
+export default Canvas;
