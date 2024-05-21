@@ -145,6 +145,7 @@ export class Scene {
         thisAgent.velocity.y = thisAgent.velocity.y * 0.9 * -1;
         thisAgent.position.y = this.canvas.height - thisAgent.radius;
         thisAgent.isColliding = true;
+        thisAgent.velocity.x = Math.max(thisAgent.velocity.x - 0.05, 0);
       }
 
       for (let j = i + 1; j < this.agents.length; j++) {
