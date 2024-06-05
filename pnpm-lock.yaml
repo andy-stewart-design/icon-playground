@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      just-debounce-it:
+        specifier: ^3.2.0
+        version: 3.2.0
     devDependencies:
       typescript:
         specifier: ^5.2.2
@@ -248,6 +252,9 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
 
+  just-debounce-it@3.2.0:
+    resolution: {integrity: sha512-WXzwLL0745uNuedrCsCs3rpmfD6DBaf7uuVwaq98/8dafURfgQaBsSpjiPp5+CW6Vjltwy9cOGI6qE71b3T8iQ==}
+
   nanoid@3.3.7:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
@@ -451,6 +458,8 @@ snapshots:
 
   fsevents@2.3.3:
     optional: true
+
+  just-debounce-it@3.2.0: {}
 
   nanoid@3.3.7: {}
 

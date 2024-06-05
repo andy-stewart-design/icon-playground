@@ -26,7 +26,7 @@ class Canvas {
   }
 
   clear() {
-    this.ctx.clearRect(0, 0, this.el.width, this.el.height);
+    this.ctx.clearRect(0, 0, this.width, this.height);
   }
 
   get center() {
@@ -52,24 +52,3 @@ class Canvas {
 }
 
 export default Canvas;
-
-// export function useCanvas<T extends Element>(): [Canvas | null, RefObject<T>] {
-//   const [canvas, setCanvas] = useState<Canvas | null>(null)
-//   const containerRef = useRef<T>(null)
-
-//   useEffect(() => {
-//     const container = containerRef.current
-//     if (!container) return
-
-//     const { width, height } = container.getBoundingClientRect()
-//     const canvas = new Canvas(width, height)
-//     setCanvas(canvas)
-//     container.appendChild(canvas.el)
-
-//     return () => {
-//       container.innerHTML = ''
-//     }
-//   }, [])
-
-//   return [canvas, containerRef]
-// }

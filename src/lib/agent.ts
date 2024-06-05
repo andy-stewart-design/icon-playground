@@ -48,7 +48,7 @@ class Agent {
     this.radius = radius;
     this.iconMultiplier = 0.875;
     this.iconSize = this.radius * this.iconMultiplier;
-    this.mass = 0.75;
+    this.mass = 12;
     this.position = position;
     this.positionOffset = new Vector(0, 0);
     this.velocity = velocity;
