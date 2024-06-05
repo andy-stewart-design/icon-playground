@@ -1,4 +1,19 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+#app {
+  height: 100lvh;
+}
+
 canvas {
+  display: block;
   background: #efefef;
 
   &:focus-visible {
