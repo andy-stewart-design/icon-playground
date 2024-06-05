@@ -1,4 +1,6 @@
-class Vector {
+import canvas from "./canvas";
+
+export default class Vector {
   x: number;
   y: number;
 
@@ -8,7 +10,7 @@ class Vector {
   }
 
   get magnitude() {
-    return this.magSq ** 0.5;
+    return Math.sqrt(this.magSq);
   }
 
   get magSq() {
@@ -20,17 +22,9 @@ class Vector {
     this.y = this.y + vector.y;
   }
 
-  static add(vec1: Vector, vec2: Vector) {
-    return new Vector(vec1.x + vec2.x, vec1.y + vec2.y);
-  }
-
   subtract(vector: Vector) {
     this.x = this.x - vector.x;
     this.y = this.y - vector.y;
-  }
-
-  static subtract(vec1: Vector, vec2: Vector) {
-    return new Vector(vec1.x - vec2.x, vec1.y - vec2.y);
   }
 
   multiply(scalar: number) {
@@ -38,25 +32,9 @@ class Vector {
     this.y = this.y * scalar;
   }
 
-  static multiply(vector: Vector, scalar: number) {
-    return new Vector(vector.x * scalar, vector.y * scalar);
-  }
-
   divide(scalar: number) {
     this.x = this.x / scalar;
     this.y = this.y / scalar;
-  }
-
-  static divide(vector: Vector, scalar: number) {
-    return new Vector(vector.x / scalar, vector.y / scalar);
-  }
-
-  dot(vector: Vector) {
-    return this.x * vector.x + this.y * vector.y;
-  }
-
-  static dot(vec1: Vector, vec2: Vector) {
-    return vec1.x * vec2.x + vec1.y * vec2.y;
   }
 
   limit(max: number) {
@@ -84,6 +62,17 @@ class Vector {
   normal() {
     return new Vector(this.y * -1, this.x);
   }
-}
 
-export default Vector;
+  dot(vector: Vector) {
+    return this.x * vector.x + this.y * vector.y;
+  }
+
+  draw(x: number, y: number, color = "black", factor = 1) {
+    canvas.ctx.beginPath();
+    canvas.ctx.moveTo(x, y);
+    canvas.ctx.lineTo(x + this.x * factor, y + this.y * factor);
+    canvas.ctx.strokeStyle = color;
+    canvas.ctx.stroke();
+    canvas.ctx.closePath();
+  }
+}

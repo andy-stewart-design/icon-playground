@@ -1,4 +1,4 @@
-import { random } from "../../utils/math";
+import { random } from "../utils/math";
 import Vector from "./vector";
 
 interface ConstructorArgs {

@@ -1,40 +1,27 @@
-export function setup() {
-  const canvas = document.querySelector("#canvas");
-  const isCanvas = canvas instanceof HTMLCanvasElement;
-  if (!canvas || !isCanvas) throw new Error("Canvas not found");
-
-  const ctx = canvas.getContext("2d")!;
-  const scale = window.devicePixelRatio;
-  const cX = canvas.width;
-  const cY = canvas.height;
-  canvas.style.width = cX + "px";
-  canvas.style.height = cY + "px";
-  canvas.width = cX * scale;
-  canvas.height = cY * scale;
-  ctx.scale(scale, scale);
-
-  return { canvas, ctx };
-}
+import Vector from "./vector";
 
 class Canvas {
   el: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;
 
-  constructor() {
+  constructor(width = 640, height = 480) {
     this.el = document.createElement("canvas");
     const context = this.el.getContext("2d");
     if (!context) throw new Error("Could not create context");
     this.ctx = context;
+    this.init(width, height);
+  }
 
+  init(width: number, height: number) {
     const scale = window.devicePixelRatio;
-    const cW = this.el.width > 640 ? this.el.width : 640;
-    const cH = this.el.height > 480 ? this.el.height : 480;
+    const cW = width;
+    const cH = height;
 
+    this.el.style.display = "block";
     this.el.style.width = cW + "px";
     this.el.style.height = cH + "px";
     this.el.width = cW * scale;
     this.el.height = cH * scale;
-    this.el.tabIndex = 0;
     this.ctx.scale(scale, scale);
   }
 
@@ -58,16 +45,31 @@ class Canvas {
   }
 
   get position() {
-    return {
-      x: this.el.getBoundingClientRect().left,
-      y: this.el.getBoundingClientRect().top,
-    };
+    const x = this.el.getBoundingClientRect().left;
+    const y = this.el.getBoundingClientRect().top;
+    return new Vector(x, y);
   }
 }
 
-const canvas = new Canvas();
-const app = document.querySelector("#app");
-if (!app) throw new Error("App not found");
-app.appendChild(canvas.el);
+export default Canvas;
 
-export default canvas;
+// export function useCanvas<T extends Element>(): [Canvas | null, RefObject<T>] {
+//   const [canvas, setCanvas] = useState<Canvas | null>(null)
+//   const containerRef = useRef<T>(null)
+
+//   useEffect(() => {
+//     const container = containerRef.current
+//     if (!container) return
+
+//     const { width, height } = container.getBoundingClientRect()
+//     const canvas = new Canvas(width, height)
+//     setCanvas(canvas)
+//     container.appendChild(canvas.el)
+
+//     return () => {
+//       container.innerHTML = ''
+//     }
+//   }, [])
+
+//   return [canvas, containerRef]
+// }

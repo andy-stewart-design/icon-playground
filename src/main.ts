@@ -1,6 +1,6 @@
-import Scene from "./lib/lol/scene";
-import Canvas from "./lib/lol/canvas";
-import { ICONS } from "./lib/lol/svg";
+import Scene from "./lib/scene";
+import Canvas from "./lib/canvas";
+import { ICONS } from "./lib/svg";
 import debounce from "just-debounce-it";
 import "./style.css";
 
