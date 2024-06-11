@@ -69,7 +69,7 @@ export default class Scene {
     if (this.icons.length < this.iconsRaw.length) {
       this.icons = getIcons(this.iconsRaw);
     }
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 1; i++) {
       const ctx = this.canvas.ctx;
       const mouse = this.mouse;
       const icon = this.pickIcon();
@@ -197,6 +197,9 @@ export default class Scene {
         const isOverlapping = distanceVector.magSq <= radiiSquared;
 
         if (isOverlapping) {
+          thisAgent.isColliding = true;
+          otherAgent.isColliding = true;
+
           const collision = Vector.subtract(
             otherAgent.position,
             thisAgent.position
@@ -222,6 +225,9 @@ export default class Scene {
           thisAgent.velocity.y -= impulse * otherAgent.mass * collisionNorm.y;
           otherAgent.velocity.x += impulse * thisAgent.mass * collisionNorm.x;
           otherAgent.velocity.y += impulse * thisAgent.mass * collisionNorm.y;
+        } else {
+          thisAgent.isColliding = false;
+          otherAgent.isColliding = false;
         }
       }
     }
